@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getTokenBySymbol, getTokenByAddress, getUserPoolEvents, getPoolById } from '../services/queries';
+import { getTokenBySymbol, getTokenByAddress, getUserPoolEvents, getPoolById, getPools } from '../services/queries';
 
 const router = Router();
 
@@ -87,5 +87,22 @@ router.get('/pool/:poolId', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+router.get('/pools', async (req, res) => {
+  try {
+    const first = parseInt(req.query.first as string) || undefined;
+    const orderBy = req.query.orderBy as "apr" | "fees24h" | "totalLiquidity" | "volume24h" | "totalShares" | "userBalanceUsd" | 'apr';
+    const orderDirection = req.query.orderDirection as "desc" | "asc" | 'desc';
+    const skip = parseInt(req.query.skip as string) || 0;
+    const textSearch = req.query.textSearch as string || '';
+    const userAddress = req.query.userAddress as string || undefined;
+
+    const pools = await getPools(first, orderBy, orderDirection, skip, textSearch, userAddress);
+    res.json(pools);
+  } catch (error: any) {
+    console.error('Error fetching pools:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+})
 
 export default router;

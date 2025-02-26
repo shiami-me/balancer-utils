@@ -342,6 +342,16 @@
 - **Parameters**:
   - `poolId` (path parameter): Pool ID
 
+#### 3. Get All Pools
+- **Endpoint**: `GET /api/queries/pools`
+- **Parameters(optional)**:
+  - `userAddress` (query parameter): User wallet address
+  - `first` (query parameter, optional): Maximum number of pools to return
+  - `orderBy` (query parameter, optional): Sort field - options: "apr", "fees24h", "totalLiquidity", "volume24h", "totalShares", "userBalanceUsd", default: "apr"
+  - `orderDirection` (query parameter, optional): Sort direction - options: "asc", "desc", default: "desc"
+  - `skip` (query parameter, optional): Number of pools to skip, default: 0
+  - `textSearch` (query parameter, optional): Text to search for in pool name/symbol, default: ""
+
 ## Common Response Format
 
 All endpoints return either:
