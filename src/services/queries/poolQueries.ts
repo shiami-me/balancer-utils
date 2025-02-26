@@ -88,7 +88,7 @@ export const getPoolById = async (poolId: string) => {
 };
 
 const poolsQuery = `
-query GetTokenBySymbol($first: Int, $orderBy: GqlPoolOrderBy, $orderDirection: GqlPoolOrderDirection, $skip: Int, $textSearch: String, $userAddress: String) {
+query GetPools($first: Int, $orderBy: GqlPoolOrderBy, $orderDirection: GqlPoolOrderDirection, $skip: Int, $textSearch: String, $userAddress: String) {
     poolGetPools(
       first: $first
       skip: $skip
@@ -101,6 +101,8 @@ query GetTokenBySymbol($first: Int, $orderBy: GqlPoolOrderBy, $orderDirection: G
       chain
       name
       symbol
+    	protocolVersion
+    	type
     	dynamicData {
         totalLiquidity,
         volume24h,
