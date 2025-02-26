@@ -9,6 +9,7 @@ const tokenBySymbolQuery = `
             symbol
             underlyingTokenAddress
             isErc4626
+            decimals
         }
     }
 `;
