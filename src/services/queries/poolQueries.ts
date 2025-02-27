@@ -104,6 +104,9 @@ query GetPools($first: Int, $orderBy: GqlPoolOrderBy, $orderDirection: GqlPoolOr
       symbol
     	protocolVersion
     	type
+      userBalance {
+        totalBalanceUsd
+      }
     	dynamicData {
         totalLiquidity,
         volume24h,
