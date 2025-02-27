@@ -12,11 +12,6 @@ import { createPublicClient, http, Address } from "viem";
 import { sonic } from "viem/chains";
 import { checkMultipleTokenBalances } from '../../../utils/balanceCheck';
 
-const client = createPublicClient({
-  chain: sonic,
-  transport: http(process.env.RPC_URL),
-});
-
 export async function getUnbalancedV2AddLiquidityTransaction(
   amountsIn: InputAmount[],
   poolId: string,
@@ -24,6 +19,10 @@ export async function getUnbalancedV2AddLiquidityTransaction(
   userAddress: Address
 ) {
   try {
+    const client = createPublicClient({
+      chain: sonic,
+      transport: http(process.env.RPC_URL),
+    });
     // Check balances first
     await checkMultipleTokenBalances(client, userAddress, amountsIn);
 

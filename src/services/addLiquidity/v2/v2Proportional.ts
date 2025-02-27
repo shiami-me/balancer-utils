@@ -9,12 +9,7 @@ import {
 } from "@balancer/sdk";
 import { createPublicClient, http, Address } from "viem";
 import { sonic } from "viem/chains";
-import { checkSingleTokenBalance } from '../../../utils/balanceCheck';
-
-const client = createPublicClient({
-  chain: sonic,
-  transport: http(process.env.RPC_URL),
-});
+import { checkSingleTokenBalance } from "../../../utils/balanceCheck";
 
 export async function getProportionalV2AddLiquidityTransaction(
   referenceAmount: InputAmount,
@@ -23,11 +18,19 @@ export async function getProportionalV2AddLiquidityTransaction(
   userAddress: Address
 ) {
   try {
+    console.log("referenceAmount", referenceAmount);
+    const client = createPublicClient({
+      chain: sonic,
+      transport: http(process.env.RPC_URL),
+    });
     // Check balance of reference token
     await checkSingleTokenBalance(client, userAddress, referenceAmount);
 
     const chainId = ChainId.SONIC;
-    const balancerApi = new BalancerApi("https://backend-v3.beets-ftm-node.com", chainId);
+    const balancerApi = new BalancerApi(
+      "https://backend-v3.beets-ftm-node.com",
+      chainId
+    );
     const poolState = await balancerApi.pools.fetchPoolState(poolId);
 
     if (!poolState) {
@@ -51,22 +54,22 @@ export async function getProportionalV2AddLiquidityTransaction(
       wethIsEth: true,
       sender: userAddress,
       recipient: userAddress,
-      fromInternalBalance: false
+      fromInternalBalance: false,
     });
 
     return {
       call,
       expectedBptOut: queryOutput.bptOut.amount.toString(),
       poolAddress: poolState.address,
-      tokens: queryOutput.amountsIn.map(amount => ({
+      tokens: queryOutput.amountsIn.map((amount) => ({
         address: amount.token.address,
-        amount: amount.amount.toString()
+        amount: amount.amount.toString(),
       })),
-      approvals: queryOutput.amountsIn.map(amount => ({
+      approvals: queryOutput.amountsIn.map((amount) => ({
         token: amount.token.address,
         spender: poolState.address,
-        amount: amount.amount
-      }))
+        amount: amount.amount,
+      })),
     };
   } catch (error) {
     throw error;

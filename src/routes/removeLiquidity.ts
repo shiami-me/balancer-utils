@@ -30,11 +30,7 @@ router.post('/v3/single-token-exact-out', async (req, res) => {
     res.json(txData);
   } catch (error: any) {
     console.error(error);
-    if (error.message.includes('Insufficient balance')) {
-      res.status(400).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: 'Internal server error' });
-    }
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -57,11 +53,7 @@ router.post('/v3/single-token-exact-in', async (req, res) => {
     res.json(txData);
   } catch (error: any) {
     console.error(error);
-    if (error.message.includes('Insufficient balance')) {
-      res.status(400).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: 'Internal server error' });
-    }
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -83,11 +75,7 @@ router.post('/v3/proportional', async (req, res) => {
     res.json(txData);
   } catch (error: any) {
     console.error(error);
-    if (error.message.includes('Insufficient balance')) {
-      res.status(400).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: 'Internal server error' });
-    }
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -109,11 +97,7 @@ router.post('/v3/boosted/proportional', async (req, res) => {
     res.json(txData);
   } catch (error: any) {
     console.error(error);
-    if (error.message.includes('Insufficient balance')) {
-      res.status(400).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: 'Internal server error' });
-    }
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -136,11 +120,7 @@ router.post('/v2/single-token-exact-out', async (req, res) => {
     res.json(txData);
   } catch (error: any) {
     console.error(error);
-    if (error.message.includes('Insufficient balance')) {
-      res.status(400).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: 'Internal server error' });
-    }
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -163,11 +143,7 @@ router.post('/v2/single-token-exact-in', async (req, res) => {
     res.json(txData);
   } catch (error: any) {
     console.error(error);
-    if (error.message.includes('Insufficient balance')) {
-      res.status(400).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: 'Internal server error' });
-    }
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -189,11 +165,7 @@ router.post('/v2/proportional', async (req, res) => {
     res.json(txData);
   } catch (error: any) {
     console.error(error);
-    if (error.message.includes('Insufficient balance')) {
-      res.status(400).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: 'Internal server error' });
-    }
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -215,11 +187,7 @@ router.post('/v2/unbalanced', async (req, res) => {
     res.json(txData);
   } catch (error: any) {
     console.error(error);
-    if (error.message.includes('Insufficient balance')) {
-      res.status(400).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: 'Internal server error' });
-    }
+    res.status(400).json({ error: error.message });
   }
 });
 

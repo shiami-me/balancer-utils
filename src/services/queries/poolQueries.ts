@@ -97,6 +97,7 @@ query GetPools($first: Int, $orderBy: GqlPoolOrderBy, $orderDirection: GqlPoolOr
       textSearch: $textSearch
       where: {chainIn: SONIC, userAddress: $userAddress}
     ) {
+      id
       address
       chain
       name

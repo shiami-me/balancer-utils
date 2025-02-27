@@ -31,11 +31,7 @@ router.post('/v3/boosted/unbalanced', async (req, res) => {
   } catch (error: any) {
     console.error(error);
     // Check if error is balance related
-    if (error.message.includes('Insufficient balance')) {
-      res.status(400).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: 'Internal server error' });
-    }
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -57,11 +53,7 @@ router.post('/v3/boosted/proportional', async (req, res) => {
     res.json(txData);
   } catch (error: any) {
     console.error(error);
-    if (error.message.includes('Insufficient balance')) {
-      res.status(400).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: 'Internal server error' });
-    }
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -82,11 +74,7 @@ router.post('/v3/unbalanced', async (req, res) => {
     res.json(txData);
   } catch (error: any) {
     console.error(error);
-    if (error.message.includes('Insufficient balance') || error.message.includes('High price impact')) {
-      res.status(400).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: 'Internal server error' });
-    }
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -107,11 +95,7 @@ router.post('/v3/proportional', async (req, res) => {
     res.json(txData);
   } catch (error: any) {
     console.error(error);
-    if (error.message.includes('Insufficient balance')) {
-      res.status(400).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: 'Internal server error' });
-    }
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -133,11 +117,7 @@ router.post('/v3/single-token', async (req, res) => {
     res.json(txData);
   } catch (error: any) {
     console.error(error);
-    if (error.message.includes('Insufficient balance') || error.message.includes('High price impact')) {
-      res.status(400).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: 'Internal server error' });
-    }
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -159,12 +139,8 @@ router.post('/v2/unbalanced', async (req, res) => {
 
     res.json(txData);
   } catch (error: any) {
-    console.error(error);
-    if (error.message.includes('Insufficient balance') || error.message.includes('High price impact')) {
-      res.status(400).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: 'Internal server error' });
-    }
+    console.error("Errorrororo: ", error.message);
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -186,11 +162,7 @@ router.post('/v2/proportional', async (req, res) => {
     res.json(txData);
   } catch (error: any) {
     console.error(error);
-    if (error.message.includes('Insufficient balance')) {
-      res.status(400).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: 'Internal server error' });
-    }
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -212,11 +184,7 @@ router.post('/v2/single-token', async (req, res) => {
     res.json(txData);
   } catch (error: any) {
     console.error(error);
-    if (error.message.includes('Insufficient balance') || error.message.includes('High price impact')) {
-      res.status(400).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: 'Internal server error' });
-    }
+    res.status(400).json({ error: error.message });
   }
 });
 

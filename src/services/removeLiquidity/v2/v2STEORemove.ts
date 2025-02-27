@@ -10,12 +10,7 @@ import {
 } from "@balancer/sdk";
 import { createPublicClient, http, Address } from "viem";
 import { sonic } from "viem/chains";
-import { checkSingleTokenBalance } from '../../../utils/balanceCheck';
-
-const client = createPublicClient({
-  chain: sonic,
-  transport: http(process.env.RPC_URL),
-});
+import { checkSingleTokenBalance } from "../../../utils/balanceCheck";
 
 export async function getSTEOV2RemoveLiquidityTransaction(
   amountOut: InputAmount,
@@ -24,8 +19,16 @@ export async function getSTEOV2RemoveLiquidityTransaction(
   userAddress: Address
 ) {
   try {
+    const client = createPublicClient({
+      chain: sonic,
+      transport: http(process.env.RPC_URL),
+    });
+
     const chainId = ChainId.SONIC;
-    const balancerApi = new BalancerApi("https://backend-v3.beets-ftm-node.com", chainId);
+    const balancerApi = new BalancerApi(
+      "https://backend-v3.beets-ftm-node.com",
+      chainId
+    );
     const poolState = await balancerApi.pools.fetchPoolState(poolId);
 
     if (!poolState) {
@@ -34,9 +37,9 @@ export async function getSTEOV2RemoveLiquidityTransaction(
 
     // Verify token is in pool
     const tokenInPool = poolState.tokens.some(
-      token => token.address.toLowerCase() === amountOut.address.toLowerCase()
+      (token) => token.address.toLowerCase() === amountOut.address.toLowerCase()
     );
-    
+
     if (!tokenInPool) {
       throw new Error("Token not found in pool");
     }
@@ -49,7 +52,10 @@ export async function getSTEOV2RemoveLiquidityTransaction(
     };
 
     const removeLiquidity = new RemoveLiquidity();
-    const queryOutput = await removeLiquidity.query(removeLiquidityInput, poolState);
+    const queryOutput = await removeLiquidity.query(
+      removeLiquidityInput,
+      poolState
+    );
 
     // Check BPT balance after we know how much is needed
     await checkSingleTokenBalance(client, userAddress, {
@@ -64,7 +70,7 @@ export async function getSTEOV2RemoveLiquidityTransaction(
       chainId,
       sender: userAddress,
       recipient: userAddress,
-      toInternalBalance: false
+      toInternalBalance: false,
     });
 
     return {
@@ -73,11 +79,13 @@ export async function getSTEOV2RemoveLiquidityTransaction(
       maxBptIn: call.maxBptIn.amount.toString(),
       tokenOut: amountOut.address,
       poolAddress: poolState.address,
-      approvals: [{
-        token: poolState.address, // BPT token address is the pool address
-        spender: poolState.address,
-        amount: queryOutput.bptIn.amount
-      }]
+      approvals: [
+        {
+          token: poolState.address, // BPT token address is the pool address
+          spender: poolState.address,
+          amount: queryOutput.bptIn.amount,
+        },
+      ],
     };
   } catch (error) {
     throw error;

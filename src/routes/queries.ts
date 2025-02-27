@@ -21,7 +21,7 @@ router.get('/token/symbol/:symbol', async (req, res) => {
     res.json(token);
   } catch (error: any) {
     console.error('Error fetching token by symbol:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -43,7 +43,7 @@ router.get('/token/address/:address', async (req, res) => {
     res.json(token);
   } catch (error: any) {
     console.error('Error fetching token by address:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -62,7 +62,7 @@ router.get('/pool/events/:userAddress', async (req, res) => {
     res.json(events);
   } catch (error: any) {
     console.error('Error fetching pool events:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -84,7 +84,7 @@ router.get('/pool/:poolId', async (req, res) => {
     res.json(pool);
   } catch (error: any) {
     console.error('Error fetching pool:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -101,7 +101,7 @@ router.get('/pools', async (req, res) => {
     res.json(pools);
   } catch (error: any) {
     console.error('Error fetching pools:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(400).json({ error: error.message });
   }
 })
 

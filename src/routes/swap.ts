@@ -30,13 +30,7 @@ router.post('/', async (req, res) => {
   } catch (error: any) {
     console.error(error);
     
-    if (error.message.includes('Token not found')) {
-      res.status(400).json({ error: error.message });
-    } else if (error.message.includes('Insufficient balance') || error.message.includes('High price impact')) {
-      res.status(400).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: 'Internal server error' });
-    }
+    res.status(400).json({ error: error.message });
   }
 });
 
