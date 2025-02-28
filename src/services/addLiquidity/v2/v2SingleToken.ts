@@ -69,7 +69,7 @@ export async function getSingleTokenV2AddLiquidityTransaction(
       ...queryOutput,
       slippage: Slippage.fromPercentage(slippage),
       chainId,
-      wethIsEth: true,
+      wethIsEth: false,
       sender: userAddress,
       recipient: userAddress,
       fromInternalBalance: false,
