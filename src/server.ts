@@ -7,6 +7,7 @@ import swapRoutes from "./routes/swap";
 import queryRoutes from "./routes/queries";
 import addLiquidityRoutes from "./routes/addLiquidity";
 import removeLiquidityRoutes from "./routes/removeLiquidity";
+import stakeRoutes from "./routes/stake";
 
 // Load environment variables
 dotenv.config();
@@ -57,10 +58,17 @@ app.use("/api/swap", swapRoutes);
 app.use("/api/queries", queryRoutes);
 app.use("/api/add-liquidity", addLiquidityRoutes);
 app.use("/api/remove-liquidity", removeLiquidityRoutes);
+app.use("/api/stake", stakeRoutes);
 
 // Health check endpoint
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "OK" });
+});
+
+// Error handling middleware
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.error(err.stack);
+  res.status(500).json({ error: "Internal Server Error" });
 });
 
 // Start server

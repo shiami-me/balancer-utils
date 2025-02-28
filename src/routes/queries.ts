@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { getTokenBySymbol, getTokenByAddress, getUserPoolEvents, getPoolById, getPools } from '../services/queries';
+import { getUserBalance } from '../services/stake/stake';
 
 const router = Router();
 
@@ -70,12 +71,13 @@ router.get('/pool/events/:userAddress', async (req, res) => {
 router.get('/pool/:poolId', async (req, res) => {
   try {
     const { poolId } = req.params;
+    const userAddress = req.query.userAddress as string || "";
     
     if (!poolId) {
       return res.status(400).json({ error: 'Pool ID parameter is required' });
     }
     
-    const pool = await getPoolById(poolId);
+    const pool = await getPoolById(poolId, userAddress);
     
     if (!pool) {
       return res.status(404).json({ error: 'Pool not found' });
@@ -101,6 +103,16 @@ router.get('/pools', async (req, res) => {
     res.json(pools);
   } catch (error: any) {
     console.error('Error fetching pools:', error);
+    res.status(400).json({ error: error.message });
+  }
+})
+
+router.get('/stake/:userAddress', async(req, res) => {
+  try {
+    const balance = await getUserBalance(req.params.userAddress as `0x${string}`);
+    res.json({ balance });
+  } catch (error: any) {
+    console.error('Error fetching user balance:', error);
     res.status(400).json({ error: error.message });
   }
 })

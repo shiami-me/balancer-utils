@@ -352,6 +352,37 @@
   - `skip` (query parameter, optional): Number of pools to skip, default: 0
   - `textSearch` (query parameter, optional): Text to search for in pool name/symbol, default: ""
 
+## Staking Routes
+
+#### 1. Stake SONIC
+- **Endpoint**: `POST /api/stake/deposit`
+- **Body**:
+  ```json
+  {
+    "amount": string,       // Amount of SONIC to stake in wei (string to handle large integers)
+    "userAddress": string   // User wallet address
+  }
+  ```
+
+#### 2. Undelegate From Pool
+- **Endpoint**: `POST /api/stake/undelegate`
+- **Body**:
+  ```json
+  {
+    "amountShares": string, // Amount of shares to undelegate in wei (string to handle large integers)
+    "userAddress": string   // User wallet address
+  }
+  ```
+
+#### 3. Withdraw
+- **Endpoint**: `POST /api/stake/withdraw`
+- **Body**:
+  ```json
+  {
+    "withdrawId": string,   // ID of the withdrawal request (from undelegate)
+  }
+  ```
+
 ## Common Response Format
 
 All endpoints return either:

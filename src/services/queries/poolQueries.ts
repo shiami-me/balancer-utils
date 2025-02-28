@@ -52,18 +52,51 @@ export const getUserPoolEvents = async (
  * @param poolId The ID of the pool to query
  * @returns Pool information
  */
-export const getPoolById = async (poolId: string) => {
+export const getPoolById = async (poolId: string, userAddress: string) => {
   const poolQuery = `
-    query GetPool($id: String!, $chains: [GqlChain!]) {
-      poolGetPool(id: $id, chains: $chains) {
+    query GetPool($id: String!, $chain: GqlChain, $userAddress: String) {
+      poolGetPool(id: $id, chain: $chain, userAddress: $userAddress) {
         id
         address
         name
-        tokens {
+    		protocolVersion
+    		type
+    		categories
+    		userBalance {
+          totalBalanceUsd
+          walletBalanceUsd
+          stakedBalances {
+            stakingType
+            balanceUsd
+          }
+        }
+    		dynamicData {
+          aprItems {
+            apr
+            rewardTokenSymbol
+            rewardTokenSymbol
+            type
+          }
+          totalLiquidity
+          totalShares
+          totalSupply
+          volume24h
+          yieldCapture24h
+          fees24h
+        }
+        poolTokens {
           address
           symbol
           weight
           decimals
+          balanceUSD
+          logoURI
+          underlyingToken {
+            address
+            symbol
+            decimals
+            
+          }
         }
       }
     }
@@ -80,7 +113,8 @@ export const getPoolById = async (poolId: string) => {
     query: poolQuery,
     variables: {
       id: poolId,
-      chains: ["SONIC"],
+      chain: "SONIC",
+      userAddress: userAddress ? userAddress : undefined,
     },
   });
 
