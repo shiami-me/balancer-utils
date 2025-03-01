@@ -3,7 +3,7 @@ import { sonic } from "viem/chains";
 import { checkSingleTokenBalance } from "../../utils/balanceCheck";
 import { InputAmount } from "@balancer/sdk";
 
-const STAKING_CONTRACT_ADDRESS = '0xD5F7FC8ba92756a34693bAA386Edcc8Dd5B3F141';
+const STAKING_CONTRACT_ADDRESS = '0xE5DA20F15420aD15DE0fa650600aFc998bbE3955';
 
 /**
  * Generate transaction data for undelegating shares from the staking pool
