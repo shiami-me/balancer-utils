@@ -95,7 +95,11 @@ export async function getUnbalancedV2RemoveLiquidityTransaction(
     });
 
     return {
-      call,
+      transaction: {
+        to: call.to,
+        data: call.callData,
+        value: call.value ?? 0,
+      },
       priceImpact: priceImpact.percentage,
       bptIn: queryOutput.bptIn.amount.toString(),
       maxBptIn: call.maxBptIn.amount.toString(),
@@ -103,13 +107,6 @@ export async function getUnbalancedV2RemoveLiquidityTransaction(
         address: amount.token.address,
         amount: amount.amount.toString(),
       })),
-      approvals: [
-        {
-          token: poolState.address, // BPT token address is the pool address
-          spender: poolState.address,
-          amount: queryOutput.bptIn.amount,
-        },
-      ],
     };
   } catch (error) {
     throw error;

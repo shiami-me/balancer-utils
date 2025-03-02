@@ -79,7 +79,6 @@ export const getSwapTransaction = async (
       swapKind: SwapKind.GivenIn,
       swapAmount,
     });
-
     const swap = new Swap({ chainId, paths, swapKind: SwapKind.GivenIn });
     const queryOutput = await swap.query(RPC_URL);
 
@@ -104,7 +103,8 @@ export const getSwapTransaction = async (
         token: resolvedTokenIn.address,
         spender: PERMIT2[chainId],
         amount: swapAmount.amount
-      }]
+      }],
+      paths
     };
   } catch (error) {
     console.error('Error in getSwapTransaction:', error);

@@ -71,6 +71,17 @@ export async function getSingleTokenAddLiquidityTransaction(
   const addLiquidity = new AddLiquidity();
   const queryOutput = await addLiquidity.query(addLiquidityInput, poolState);
 
+  const priceImpact = await PriceImpact.addLiquiditySingleToken(
+    addLiquidityInput,
+    poolState
+  );
+
+  if (priceImpact.percentage > 5) {
+    throw new Error(
+      `High price impact: ${priceImpact.percentage.toFixed(2)}%`
+    );
+  }
+
   // Check balance after we know how much we need
   await checkSingleTokenBalance(client, userAddress, {
     address: tokenIn,
@@ -105,5 +116,10 @@ export async function getSingleTokenAddLiquidityTransaction(
     },
     expectedBptOut: queryOutput.bptOut.amount.toString(),
     minBptOut: call.minBptOut.amount.toString(),
+    tokens: queryOutput.amountsIn.map((amount) => ({
+      address: amount.token.address,
+      amount: amount.amount.toString(),
+    })),
+    priceImpact: priceImpact.percentage.toFixed(2),
   };
 }

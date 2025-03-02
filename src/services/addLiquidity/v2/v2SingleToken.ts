@@ -76,7 +76,11 @@ export async function getSingleTokenV2AddLiquidityTransaction(
     });
 
     return {
-      call,
+      transaction: {
+        to: call.to,
+        data: call.callData,
+        value: call.value.toString(),
+      },
       priceImpact: priceImpact.percentage,
       expectedBptOut: queryOutput.bptOut.amount.toString(),
       poolAddress: poolState.address,
@@ -87,7 +91,7 @@ export async function getSingleTokenV2AddLiquidityTransaction(
       approvals: [
         {
           token: tokenIn,
-          spender: poolState.address,
+          spender: call.to,
           amount: queryOutput.amountsIn[0].amount,
         },
       ],

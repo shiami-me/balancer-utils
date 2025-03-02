@@ -85,5 +85,9 @@ export async function getBoostedProportionalAddLiquidityTransaction(
     },
     expectedBptOut: queryOutput.bptOut.amount.toString(),
     minBptOut: call.minBptOut.amount.toString(),
+    tokens: queryOutput.amountsIn.map((amount) => ({
+      address: amount.token.address,
+      amount: amount.amount.toString(),
+    })),
   };
 }

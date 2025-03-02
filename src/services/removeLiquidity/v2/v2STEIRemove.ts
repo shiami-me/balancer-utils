@@ -84,7 +84,11 @@ export async function getSTEIV2RemoveLiquidityTransaction(
     });
 
     return {
-      call,
+      transaction: {
+        to: call.to,
+        data: call.callData,
+        value: call.value ?? 0,
+      },
       priceImpact: priceImpact.percentage,
       expectedAmountOut: queryOutput.amountsOut
         .filter(
@@ -93,14 +97,7 @@ export async function getSTEIV2RemoveLiquidityTransaction(
         )[0]
         .amount.toString(),
       tokenOut: tokenOut,
-      poolAddress: poolState.address,
-      approvals: [
-        {
-          token: poolState.address, // BPT token address is the pool address
-          spender: poolState.address,
-          amount: bptIn.rawAmount,
-        },
-      ],
+      poolAddress: poolState.address
     };
   } catch (error) {
     throw error;

@@ -76,7 +76,11 @@ export async function getUnbalancedV2AddLiquidityTransaction(
     });
 
     return {
-      call,
+      transaction: {
+        to: call.to,
+        data: call.callData,
+        value: call.value ?? 0
+      },
       priceImpact: priceImpact.percentage,
       expectedBptOut: queryOutput.bptOut.amount.toString(),
       poolAddress: poolState.address,
@@ -86,7 +90,7 @@ export async function getUnbalancedV2AddLiquidityTransaction(
       })),
       approvals: queryOutput.amountsIn.map(amount => ({
         token: amount.token.address,
-        spender: poolState.address,
+        spender: call.to,
         amount: amount.amount
       }))
     };

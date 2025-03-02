@@ -12,17 +12,36 @@ export interface ApprovalData {
   amount: bigint;
 }
 
+export interface TokenAmountData {
+  address: Address;
+  amount: string;
+}
+
 export interface AddLiquidityResponse {
   approvals?: ApprovalData[];
   transaction: TransactionData;
   expectedBptOut: string;
   minBptOut: string;
+  tokens: TokenAmountData[];
+  priceImpact?: string;
 }
 
 export interface RemoveLiquidityResponse {
-  approvals?: ApprovalData[];
+  // Transaction data
   transaction: TransactionData;
-  expectedAmountsOut: string[];
+  
+  // BPT information (for single token exact out and unbalanced)
+  bptIn?: string;
+  maxBptIn?: string;
+  
+  // Output tokens information
+  expectedAmountsOut?: TokenAmountData[];   // For proportional removals
+  tokenOut?: Address;                        // For single token removals
+  expectedAmountOut?: string;                // For single token exact in
+  
+  // Additional metadata
+  poolAddress?: Address;                     // Pool contract address
+  priceImpact?: string | number;             // Price impact as percentage
 }
 
 export interface SwapResponse {

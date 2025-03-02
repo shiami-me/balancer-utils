@@ -74,18 +74,15 @@ export async function getSTEOV2RemoveLiquidityTransaction(
     });
 
     return {
-      call,
+      transaction: {
+        to: call.to,
+        data: call.callData,
+        value: call.value ?? 0,
+      },
       bptIn: queryOutput.bptIn.amount.toString(),
       maxBptIn: call.maxBptIn.amount.toString(),
       tokenOut: amountOut.address,
-      poolAddress: poolState.address,
-      approvals: [
-        {
-          token: poolState.address, // BPT token address is the pool address
-          spender: poolState.address,
-          amount: queryOutput.bptIn.amount,
-        },
-      ],
+      poolAddress: poolState.address
     };
   } catch (error) {
     throw error;

@@ -72,6 +72,17 @@ export async function getUnbalancedAddLiquidityTransaction(
   const addLiquidity = new AddLiquidity();
   const queryOutput = await addLiquidity.query(addLiquidityInput, poolState);
 
+  const priceImpact = await PriceImpact.addLiquidityUnbalanced(
+    addLiquidityInput,
+    poolState
+  );
+
+  if (priceImpact.percentage > 5) {
+    throw new Error(
+      `High price impact: ${priceImpact.percentage.toFixed(2)}%`
+    );
+  }
+
   const permit2 = await Permit2Helper.signAddLiquidityApproval({
     ...queryOutput,
     slippage,
@@ -100,5 +111,10 @@ export async function getUnbalancedAddLiquidityTransaction(
     },
     expectedBptOut: queryOutput.bptOut.amount.toString(),
     minBptOut: call.minBptOut.amount.toString(),
+    tokens: queryOutput.amountsIn.map((amount) => ({
+      address: amount.token.address,
+      amount: amount.amount.toString(),
+    })),
+    priceImpact: priceImpact.percentage.toFixed(2),
   };
 }

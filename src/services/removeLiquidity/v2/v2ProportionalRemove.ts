@@ -60,19 +60,16 @@ export async function getProportionalV2RemoveLiquidityTransaction(
     });
 
     return {
-      call,
+      transaction: {
+        to: call.to,
+        data: call.callData,
+        value: call.value ?? 0,
+      },
       expectedAmountsOut: queryOutput.amountsOut.map((amount) => ({
         address: amount.token.address,
         amount: amount.amount.toString(),
       })),
-      poolAddress: poolState.address,
-      approvals: [
-        {
-          token: bptIn.address,
-          spender: poolState.address,
-          amount: bptIn.rawAmount,
-        },
-      ],
+      poolAddress: poolState.address
     };
   } catch (error) {
     throw error;

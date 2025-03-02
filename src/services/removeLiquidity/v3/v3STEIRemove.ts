@@ -8,6 +8,7 @@ import {
   InputAmount,
   Address,
   PermitHelper,
+  PriceImpact,
 } from "@balancer/sdk";
 import { createWalletClient, http, publicActions, walletActions } from "viem";
 import { sonic } from "viem/chains";
@@ -61,7 +62,16 @@ export async function getSTEIRemoveLiquidityTransaction(
       rpcUrl: RPC_URL,
       kind: RemoveLiquidityKind.SingleTokenExactIn,
     };
+    const priceImpact = await PriceImpact.removeLiquidity(
+      removeLiquidityInput,
+      poolState
+    );
 
+    if (priceImpact.percentage > 5) {
+      throw new Error(
+        `High price impact: ${priceImpact.percentage.toFixed(2)}%`
+      );
+    }
     const removeLiquidity = new RemoveLiquidity();
     const queryOutput = await removeLiquidity.query(removeLiquidityInput, poolState);
 
@@ -87,7 +97,8 @@ export async function getSTEIRemoveLiquidityTransaction(
         amount.token.address.toLowerCase() === tokenOut.toLowerCase()
       )[0].amount.toString(),
       tokenOut,
-      poolAddress: poolState.address
+      poolAddress: poolState.address,
+      priceImpact: priceImpact.percentage.toFixed(2),
     };
   } catch (error) {
     throw error;

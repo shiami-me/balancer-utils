@@ -9,6 +9,7 @@ import {
   Permit2Helper,
   PERMIT2,
   Address,
+  PriceImpact,
 } from "@balancer/sdk";
 import { createWalletClient, http, publicActions, walletActions, createPublicClient } from "viem";
 import { sonic } from "viem/chains";
@@ -58,6 +59,17 @@ export async function getBoostedUnbalancedAddLiquidityTransaction(
   const addLiquidity = new AddLiquidityBoostedV3();
   const queryOutput = await addLiquidity.query(addLiquidityInput, poolState);
 
+  const priceImpact = await PriceImpact.addLiquidityUnbalancedBoosted(
+    addLiquidityInput,
+    poolState
+  );
+
+  if (priceImpact.percentage > 5) {
+    throw new Error(
+      `High price impact: ${priceImpact.percentage.toFixed(2)}%`
+    );
+  }
+
   // Sign permit2 on server side since it's related to protocol interaction
   const permit2 = await Permit2Helper.signAddLiquidityBoostedApproval({
     ...queryOutput,
@@ -87,5 +99,10 @@ export async function getBoostedUnbalancedAddLiquidityTransaction(
     },
     expectedBptOut: queryOutput.bptOut.amount.toString(),
     minBptOut: call.minBptOut.amount.toString(),
+    tokens: queryOutput.amountsIn.map((amount) => ({
+      address: amount.token.address,
+      amount: amount.amount.toString(),
+    })),
+    priceImpact: priceImpact.percentage.toFixed(2),
   };
 }

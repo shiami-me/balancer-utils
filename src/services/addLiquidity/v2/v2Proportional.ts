@@ -58,7 +58,11 @@ export async function getProportionalV2AddLiquidityTransaction(
     });
 
     return {
-      call,
+      transaction: {
+        to: call.to,
+        data: call.callData,
+        value: call.value ?? 0,
+      },
       expectedBptOut: queryOutput.bptOut.amount.toString(),
       poolAddress: poolState.address,
       tokens: queryOutput.amountsIn.map((amount) => ({
@@ -67,7 +71,7 @@ export async function getProportionalV2AddLiquidityTransaction(
       })),
       approvals: queryOutput.amountsIn.map((amount) => ({
         token: amount.token.address,
-        spender: poolState.address,
+        spender: call.to,
         amount: amount.amount,
       })),
     };
