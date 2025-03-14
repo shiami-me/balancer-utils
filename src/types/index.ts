@@ -18,12 +18,14 @@ export interface TokenAmountData {
 }
 
 export interface AddLiquidityResponse {
+  poolAddress?: Address;
   approvals?: ApprovalData[];
-  transaction: TransactionData;
+  transaction?: TransactionData;
   expectedBptOut: string;
-  minBptOut: string;
+  minBptOut?: string;
   tokens: TokenAmountData[];
   priceImpact?: string;
+  permitData?: any;
 }
 
 export interface RemoveLiquidityResponse {

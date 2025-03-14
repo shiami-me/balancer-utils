@@ -6,7 +6,7 @@ const router = Router();
 
 router.post('/', async (req, res) => {
   try {
-    const { tokenIn, tokenOut, slippage, userAddress } = req.body;
+    const { tokenIn, tokenOut, slippage, userAddress, amount } = req.body;
 
     if (!tokenIn || !tokenOut) {
       return res.status(400).json({ error: 'tokenIn and tokenOut are required' });
@@ -16,6 +16,10 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'userAddress is required' });
     }
 
+    if (!amount) {
+      return res.status(400).json({ error: 'amount is required' });
+    }
+
     // Default slippage to 0.5% if not provided
     const slippageValue = typeof slippage === 'number' ? slippage : 0.5;
 
@@ -23,7 +27,8 @@ router.post('/', async (req, res) => {
       tokenIn,
       tokenOut,
       slippageValue,
-      userAddress as Address
+      userAddress as Address,
+      amount
     );
 
     res.json(txData);

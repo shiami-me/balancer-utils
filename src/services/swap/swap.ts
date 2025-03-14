@@ -6,12 +6,12 @@ import {
   Token,
   ChainId,
   TokenAmount,
-  Permit2Helper,
   PERMIT2,
+  SwapBuildOutputExactIn,
+  ExactInQueryOutput,
 } from "@balancer/sdk";
 import { createWalletClient, http, Address, walletActions, publicActions } from "viem";
 import { sonic } from "viem/chains";
-import { privateKeyToAccount } from "viem/accounts";
 import { checkSingleTokenBalance } from '../../utils/balanceCheck';
 import { getTokenBySymbol, getTokenByAddress } from '../queries';
 
@@ -28,7 +28,8 @@ export const getSwapTransaction = async (
   tokenIn: string,
   tokenOut: string,
   slippage: number,
-  userAddress: Address
+  userAddress: Address,
+  amount: number
 ) => {
   try {
     // Resolve tokens (handle both symbols and addresses)
@@ -50,18 +51,15 @@ export const getSwapTransaction = async (
 
     const chainId = ChainId.SONIC;
     const RPC_URL = process.env.RPC_URL!;
-    const PRIVATE_KEY = process.env.PRIVATE_KEY!;
 
     const client = createWalletClient({
       chain: sonic,
       transport: http(RPC_URL),
     }).extend(walletActions).extend(publicActions);
 
-    const account = privateKeyToAccount(PRIVATE_KEY as `0x${string}`);
-
     // Create token instances
     const tokenInInstance = new Token(chainId, resolvedTokenIn.address, resolvedTokenIn.decimals);
-    const swapAmount = TokenAmount.fromHumanAmount(tokenInInstance, resolvedTokenIn.amount);
+    const swapAmount = TokenAmount.fromHumanAmount(tokenInInstance, amount.toString() as `${number}`);
 
     // Check token balance first
     await checkSingleTokenBalance(client, userAddress, {
@@ -80,32 +78,44 @@ export const getSwapTransaction = async (
       swapAmount,
     });
     const swap = new Swap({ chainId, paths, swapKind: SwapKind.GivenIn });
-    const queryOutput = await swap.query(RPC_URL);
+    const queryOutput = await swap.query(RPC_URL) as ExactInQueryOutput;
 
     const slippageInstance = Slippage.fromPercentage(`${slippage}`);
-
-    const permit2 = await Permit2Helper.signSwapApproval({
-      queryOutput,
-      slippage: slippageInstance,
-      client,
-      owner: account.address,
-    });
-
-    const call = swap.buildCallWithPermit2({ queryOutput, slippage: slippageInstance }, permit2);
-
-    return {
-      transaction: {
-        to: call.to,
-        data: call.callData,
-        value: call.value ?? 0,
-      },
-      approvals: [{
-        token: resolvedTokenIn.address,
-        spender: PERMIT2[chainId],
-        amount: swapAmount.amount
-      }],
-      paths
-    };
+    if (swap.protocolVersion === 2) {
+      const callData = swap.buildCall({
+        slippage: slippageInstance,
+        queryOutput,
+        wethIsEth: true,
+        sender: userAddress,
+        recipient: userAddress,
+      }) as SwapBuildOutputExactIn;
+      return {
+        transaction: {
+          to: callData.to,
+          data: callData.callData,
+          value: callData.value,
+        },
+        paths,
+        approvals: [{
+          token: queryOutput.amountIn.token.address,
+          spender: callData.to,
+          amount: queryOutput.amountIn.amount
+        }]
+      }
+    } else {
+      return {
+        approvals: [{
+          token: resolvedTokenIn.address,
+          spender: PERMIT2[chainId],
+          amount: swapAmount.amount
+        }],
+        paths,
+        permitData: {
+          queryOutput,
+          slippage: slippageInstance,
+        }
+      };
+    }
   } catch (error) {
     console.error('Error in getSwapTransaction:', error);
     throw error;

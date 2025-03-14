@@ -14,6 +14,9 @@ export async function getSingleTokenBalance(
   userAddress: Address,
   token: InputAmount
 ): Promise<bigint> {
+  if (token.address.toLowerCase() === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" || token.address.toLowerCase() === "0x0000000000000000000000000000000000000000" ){
+    return await client.getBalance({ address: userAddress });
+  }
   return client.readContract({
     address: token.address,
     abi: balanceAbi,
@@ -23,7 +26,7 @@ export async function getSingleTokenBalance(
 }
 
 export async function checkSingleTokenBalance(
-  client: PublicClient,
+  client: any,
   userAddress: Address,
   token: InputAmount
 ): Promise<void> {

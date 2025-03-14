@@ -7,11 +7,9 @@ import {
   Slippage,
   InputAmount,
   Address,
-  PermitHelper,
 } from "@balancer/sdk";
 import { createWalletClient, http, publicActions, walletActions } from "viem";
 import { sonic } from "viem/chains";
-import { privateKeyToAccount } from "viem/accounts";
 import { checkSingleTokenBalance } from '../../../utils/balanceCheck';
 
 export async function getProportionalRemoveLiquidityTransaction(
@@ -23,14 +21,11 @@ export async function getProportionalRemoveLiquidityTransaction(
   try {
     const chainId = ChainId.SONIC;
     const RPC_URL = process.env.RPC_URL!;
-    const PRIVATE_KEY = process.env.PRIVATE_KEY!;
 
     const client = createWalletClient({
       chain: sonic,
       transport: http(RPC_URL),
     }).extend(walletActions).extend(publicActions);
-
-    const account = privateKeyToAccount(PRIVATE_KEY as `0x${string}`);
 
     // Check BPT balance
     await checkSingleTokenBalance(client, userAddress, bptIn);
@@ -54,28 +49,17 @@ export async function getProportionalRemoveLiquidityTransaction(
     const removeLiquidity = new RemoveLiquidity();
     const queryOutput = await removeLiquidity.query(removeLiquidityInput, poolState);
 
-    const permit2 = await PermitHelper.signRemoveLiquidityApproval({
-      ...queryOutput,
-      slippage,
-      client,
-      owner: account.address,
-    });
-
-    const call = removeLiquidity.buildCallWithPermit(
-      { ...queryOutput, slippage },
-      permit2
-    );
-
     return {
-      transaction: {
-        to: call.to,
-        data: call.callData,
-        value: call.value ?? 0,
-      },
       expectedAmountsOut: queryOutput.amountsOut.map(amount => ({
         address: amount.token.address,
         amount: amount.amount.toString()
-      }))
+      })),
+      poolAddress: poolState.address,
+      priceImpact: 0,
+      permitData: {
+        queryOutput,
+        slippage,
+      }
     };
   } catch (error) {
     throw error;

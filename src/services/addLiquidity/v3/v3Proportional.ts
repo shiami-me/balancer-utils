@@ -6,14 +6,12 @@ import {
   ChainId,
   Slippage,
   InputAmount,
-  Permit2Helper,
   PERMIT2,
   Address,
 } from "@balancer/sdk";
-import { createWalletClient, http, publicActions, walletActions, createPublicClient } from "viem";
+import { createWalletClient, http, publicActions, walletActions } from "viem";
 import { sonic } from "viem/chains";
 import { AddLiquidityResponse } from "../../../types";
-import { privateKeyToAccount } from "viem/accounts";
 import { checkSingleTokenBalance } from "../../../utils/balanceCheck";
 
 export async function getProportionalAddLiquidityTransaction(
@@ -24,14 +22,11 @@ export async function getProportionalAddLiquidityTransaction(
 ): Promise<AddLiquidityResponse> {
   const chainId = ChainId.SONIC;
   const RPC_URL = process.env.RPC_URL!;
-  const PRIVATE_KEY = process.env.PRIVATE_KEY!;
 
   const client = createWalletClient({
     chain: sonic,
     transport: http(RPC_URL),
   }).extend(walletActions).extend(publicActions);
-
-  const account = privateKeyToAccount(PRIVATE_KEY as `0x${string}`);
 
   // Check balance for reference token
   await checkSingleTokenBalance(client, userAddress, referenceAmount);
@@ -58,18 +53,6 @@ export async function getProportionalAddLiquidityTransaction(
   const addLiquidity = new AddLiquidity();
   const queryOutput = await addLiquidity.query(addLiquidityInput, poolState);
 
-  const permit2 = await Permit2Helper.signAddLiquidityApproval({
-    ...queryOutput,
-    slippage,
-    client,
-    owner: account.address,
-  });
-
-  const call = addLiquidity.buildCallWithPermit2(
-    { ...queryOutput, slippage },
-    permit2
-  );
-
   const approvals = queryOutput.amountsIn.map((amountIn) => ({
     token: amountIn.token.address,
     spender: PERMIT2[chainId],
@@ -78,16 +61,15 @@ export async function getProportionalAddLiquidityTransaction(
 
   return {
     approvals,
-    transaction: {
-      to: call.to,
-      data: call.callData,
-      value: call.value ?? 0,
-    },
     expectedBptOut: queryOutput.bptOut.amount.toString(),
-    minBptOut: call.minBptOut.amount.toString(),
-    tokens:  queryOutput.amountsIn.map((amount) => ({
+    tokens: queryOutput.amountsIn.map((amount) => ({
       address: amount.token.address,
       amount: amount.amount.toString(),
     })),
+    poolAddress: poolState.address,
+    permitData: {
+      queryOutput,
+      slippage,
+    }
   };
 }
